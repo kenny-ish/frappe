@@ -69,6 +69,12 @@
 		display: none;
 	}
 
+	html[dir="rtl"] body:not(.dock-pinned) & {
+		left: auto;
+		right: 8px;
+		transform: translate(150%, -50%);
+	}
+
 	// The app's mark, pinned to the top of the tray in a band one page header tall, so the rule
 	// under it carries the header's bottom border across a pinned dock. The rule is the band's, not
 	// the tiles', because a pinned dock's tiles scroll and bleed past the column (below).

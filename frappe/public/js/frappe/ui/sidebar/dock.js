@@ -1,7 +1,7 @@
 // The app switcher: the modules of the app that owns the sidebar on screen. Pinned (the default)
-// it is a column; floating it slides in over the sidebar when the pointer hits the window's left edge.
+// it is a column; floating it slides in over the sidebar when the pointer hits the window's edge.
 frappe.ui.Dock = class Dock {
-	// Pixels from the left edge: reveal at the edge, hide once the pointer is past the tray.
+	// Pixels from the nearest window edge: reveal at the edge, hide once the pointer is past the tray.
 	static REVEAL_EDGE = 1;
 	static HIDE_BAND = 90;
 
@@ -160,13 +160,16 @@ frappe.ui.Dock = class Dock {
 			.off(".dock-edge")
 			.on("mousemove.dock-edge", (e) => {
 				if (!this.enabled || this.is_pinned) return;
+				const dist_from_edge = frappe.utils.is_rtl()
+					? window.innerWidth - e.clientX
+					: e.clientX;
 				// Cheap exit for the common case: shut, and nowhere near the edge.
-				if (!this.is_open && e.clientX > frappe.ui.Dock.REVEAL_EDGE) return;
+				if (!this.is_open && dist_from_edge > frappe.ui.Dock.REVEAL_EDGE) return;
 
 				const open = this.should_open({
 					over_dock: !!$(e.target).closest(".dock").length,
 					holds_focus: this.holds_focus(),
-					dist_from_edge: e.clientX,
+					dist_from_edge,
 					currently_open: this.is_open,
 				});
 				open ? this.open() : this.close();

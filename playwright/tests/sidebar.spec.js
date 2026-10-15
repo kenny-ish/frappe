@@ -98,4 +98,27 @@ test.describe("Sidebar", () => {
 		await page.locator(".show-all-btn").click();
 		await expect(page.locator(".attachment-row")).toHaveCount(12);
 	});
+
+	test("Verify floating dock follows the RTL edge", async ({ page, desk }) => {
+		await page.goto("/desk");
+		await desk.ready();
+		await page.evaluate(() => {
+			document.documentElement.dir = "rtl";
+			frappe.boot.lang = "ar";
+			const dock = frappe.app.sidebar.dock;
+			dock.pinned = false;
+			dock.is_pinned = false;
+			dock.enabled = true;
+			dock.$dock.removeClass("hidden");
+			dock.close();
+			document.body.classList.remove("dock-pinned", "dock-open");
+		});
+
+		const viewport = page.viewportSize();
+		await page.mouse.move(viewport.width - 1, Math.floor(viewport.height / 2));
+		await expect(page.locator("body")).toHaveClass(/dock-open/);
+
+		const dock_box = await page.locator("#desk-dock").boundingBox();
+		expect(dock_box.x).toBeGreaterThan(viewport.width / 2);
+	});
 });
