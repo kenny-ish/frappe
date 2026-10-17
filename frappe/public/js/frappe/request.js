@@ -445,6 +445,7 @@ frappe.request.prepare = function (opts) {
 };
 
 frappe.request.is_session_expired = function (response) {
+	if (frappe.app?.logging_out) return false;
 	if (response?.session_expired) return true;
 
 	const was_logged_in =

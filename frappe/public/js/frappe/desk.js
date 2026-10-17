@@ -442,14 +442,19 @@ frappe.Application = class Application {
 		var me = this;
 		me.logged_out = true;
 		frappe.confirm(__("Are you sure you want to log out?"), function () {
+			me.logging_out = true;
 			return frappe.call({
 				method: "logout",
 				callback: function (r) {
 					if (r.exc) {
+						me.logging_out = false;
 						return;
 					}
 
 					me.redirect_to_login();
+				},
+				error: function () {
+					me.logging_out = false;
 				},
 			});
 		});
